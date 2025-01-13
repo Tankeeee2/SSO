@@ -17,7 +17,7 @@ void * th_function (void *arg)
     /*Tenemos que devolver un puntero, es decir, una direccion de memoria a un tipo de dato,
 	  y castearla a void * */
     
-    pthread_exit((void *) &y); 
+    pthread_exit((void *)&y); 
 }
 
 int main(int argn, char ** argp)

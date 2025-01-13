@@ -32,19 +32,18 @@ void * PrintHello(void * threadid)
    pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	pthread_t threads[NUM_THREADS];
 	int t, i, join_value;
 
 	for(t=0;t<NUM_THREADS;t++){
 		printf("Hilo principal: creando hebra %d...\n", t);
 		
-       	if (pthread_create(&threads[t], NULL, (void *) PrintHello, (void *) &t)) 
-		{
+       	if (pthread_create(&threads[t], NULL, (void *) PrintHello, (void *) &t)){
 			 printf("ERROR; El codigo de error en pthread_create() es %d\n", t);
 			 exit(EXIT_FAILURE);
 		}
+       	
 
 		/*Pruebe a descomentar el sleep(1), posiblemente ya si obtenga la salida que usted esperaba..., 
         pero es una mala programacion para intentar sincronizar sus hilos.*/
@@ -55,14 +54,5 @@ int main(int argc, char *argv[])
 		tiempo a crear bastantes o incluso todas las hebras antes de que una de ellas empiece a ejecutar.*/
 	}
 	
-	for(i=0;i<NUM_THREADS;i++) 
-	{
-	    join_value = pthread_join(threads[i], NULL);
-
-	    if(join_value!=0)
-	    {
-	      perror("Fallo en pthread_join()...\n");		
-	      exit(EXIT_FAILURE);
-	    }
-	}
+	pthread_detach(threads[0]);
 }
