@@ -1,17 +1,17 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <pthread.h>
+#include <sys/types.h> 
+#include <unistd.h> 
 
 //Declaración de una estructura 
-struct param
-{
+struct param{
     char frase[30];
     int numero; 
 };
 
 /*Función que se asignará a los hilos que se creen. Recibe un puntero a estructura */ 
-void *hiloMensaje (void * mensa)
-{
+void *hiloMensaje (void * mensa){
    	struct param *aux = (struct param *) mensa; 
 	printf("%s %d\n", aux->frase, aux->numero);
     
@@ -24,13 +24,15 @@ void *hiloMensaje (void * mensa)
 int main(){    
 	//Declaración de dos hebras, hilos o procesos ligeros. NO CREACION 
 	pthread_t thd1, thd2; 
-
+	printf("Mi PID es: %d\n", getpid());
 	// Inicializacion de primera estructura de tipo “struct param”
 	struct param param1 = {"Soy el hilo ", 1};
 	// Inicializacion de segunda estructura de tipo “struct param”
 	struct param param2 = {"Soy el hilo ", 2};
 
-	/*Creamos dos hilos. La función la pasaremos como (void *) nombreFuncion. Es decir, hacemos un casting a (void *), aunque por defecto no es necesario, ya que el nombre de una función es su dirección de memoria. También es importante realizar esto con la dirección de memoria de la variable que contiene los parámetros que se le pasan a la función */
+	/*Creamos dos hilos. La función la pasaremos como (void *) nombreFuncion. Es decir, hacemos un casting a (void *), aunque por 
+	defecto no es necesario, ya que el nombre de una función es su dirección de memoria. También es importante realizar esto con la
+	dirección de memoria de la  variable que contiene los parámetros que se le pasan a la función */
 	
 	if( pthread_create (&thd1, NULL, (void *) hiloMensaje, (void *) &param1) ){
 	  fprintf(stderr, "Error creating thread\n");
@@ -46,7 +48,10 @@ int main(){
 	
 	
 
-	/*Esperamos la finalización de los hilos. Si la función devolviera algo habría que recogerlo con el segundo argumento, que en este caso esta a NULL. Cuando el segundo argumento no es NULL, se recogen los resultados que vienen de pthread_exit(), que se explicará en las siguientes demos.*/
+	/*Esperamos la finalización de los hilos. Si la función devolviera algo habría que recogerlo con el segundo argumento, que en este
+	 caso esta a NULL. 
+	Cuando el segundo argumento no es NULL, se recogen los resultados que vienen de pthread_exit(), que se explicará en las siguientes
+	 demos.*/
 	if( pthread_join(thd1, NULL) ){
 	  fprintf(stderr, "Error joining thread\n");
 	  exit(EXIT_FAILURE);  
@@ -57,7 +62,8 @@ int main(){
 	  exit(EXIT_FAILURE);  
 	}
 
-	/*Si no se ponen estos join() en el programa principal y simplemente lanzamos los dos hilos y finalizamos, lo más probable es que los hilos no lleguen a ejecutarse completamente o incluso que no lleguen ni a empezar antes de que el programa principal termine.*/
+	/*Si no se ponen estos join() en el programa principal y simplemente lanzamos los dos hilos y finalizamos, lo más probable es que 
+	los hilos no lleguen a ejecutarse completamente o incluso que no lleguen ni a empezar antes de que el programa principal termine.*/
 	printf("Hilo principal: han finalizado las threads.\n");
 	exit(EXIT_SUCCESS); 
 }

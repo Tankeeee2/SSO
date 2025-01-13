@@ -35,16 +35,14 @@ void * PrintHello(void * threadid)
 int main(int argc, char *argv[])
 {
 	pthread_t threads[NUM_THREADS];
-	int rc, t, i, join_value;
+	int t, i, join_value;
 
-	for(t=0;t<NUM_THREADS;t++) 
-	{
+	for(t=0;t<NUM_THREADS;t++){
 		printf("Hilo principal: creando hebra %d...\n", t);
-		rc = pthread_create(&threads[t], NULL, (void *) PrintHello, (void *) &t);
-
-       	if (rc) 
+		
+       	if (pthread_create(&threads[t], NULL, (void *) PrintHello, (void *) &t)) 
 		{
-			 printf("ERROR; El codigo de error en pthread_create() es %d\n", rc);
+			 printf("ERROR; El codigo de error en pthread_create() es %d\n", t);
 			 exit(EXIT_FAILURE);
 		}
 
