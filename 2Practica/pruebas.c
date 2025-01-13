@@ -1,13 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
 
+int main() {
+    int a = 10;
+    int *p = &a; // Puntero `p` apunta a `a`
 
-int main(){
-    int n[10]={1,2,3,4,5,6,7,8,9,10};
-    
-    for(int i=0; i<10; i++){
-        printf("%d\n", n+i);
-    }
+    printf("Valor de 'a': %d\n", a); // Imprime 10
+    printf("Dirección de 'a' (&a): %p\n", &a); // Dirección de `a`
+    printf("Valor de 'p'(p): %p\n", p); // Dirección almacenada en `p` (misma que la de `a`)
+    printf("Valor apuntado por 'p'(*p): %d\n", *p); // 10 (valor de `a` al que apunta `p`)
 
- return 0;   
+    *p = 20; // Cambia el valor de `a` a 20
+    printf("----------------------------\n");
+
+    printf("Valor de 'a': %d\n", a); // Imprime 10
+    printf("Dirección de 'a' (&a): %p\n", &a); // Dirección de `a`
+    printf("Valor de 'p'(p): %p\n", p); // Dirección almacenada en `p` (misma que la de `a`)
+    printf("Valor apuntado por 'p'(*p): %d\n", *p); // 10 (valor de `a` al que apunta `p`)
+    printf("Valor de &p): %d\n", &p); // 10 (valor de `a` al que apunta `p`)
+
+    return 0;
 }
