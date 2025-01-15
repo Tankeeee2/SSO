@@ -19,7 +19,6 @@ ya sea con malloc() o no, y pasar a las hebras la dirección de memoria del sem�
 
 Realice estos cambios para coger práctica y entender mejor cómo funciona la gestión de hilos
 en C.
-
 */
 
 #include <pthread.h> 
@@ -35,13 +34,11 @@ sem_t sgeneral; //Semaforo general
 
 void * ThreadAdd(void *a) 
 {
-    int i, tmp,p;
+    int tmp;
     
-    for(i = 0; i < NITER; i++) 
-    {
-        p = sem_wait(&sgeneral); //Chequeo para ver si el semáforo está abierto despues de decrementar. 
-        if (p !=0)
-        {
+    for(int i = 0; i < NITER; i++){
+        //Chequeo para ver si el semáforo está abierto despues de decrementar. 
+        if (sem_wait(&sgeneral)!=0){
              printf("sem_wait error...\n");
              printf("errno value= %d definido como %s\n", errno, strerror(errno));
              pthread_exit(NULL);
@@ -61,9 +58,8 @@ void * ThreadAdd(void *a)
         tmp = tmp+1;  //Seccion Critica
         count = tmp;  //Seccion Critica
         
-        p = sem_post(&sgeneral); //Se comprueba el valor del semáforo al incrementarlo. Si hay algun proceso en cola pasa a estado Listo. 
-        if (p !=0)
-        {
+        //Se comprueba el valor del semáforo al incrementarlo. Si hay algun proceso en cola pasa a estado Listo. 
+        if (sem_post(&sgeneral)!=0){
              printf("sem_post error...\n");
              printf("errno value= %d definido como %s\n", errno, strerror(errno));
              pthread_exit(NULL);
@@ -73,42 +69,34 @@ void * ThreadAdd(void *a)
 }
 
 
-int main(int argc, char * argv[]) 
-{
+int main(){
 	pthread_t tid1, tid2;
-	int p;
 	
 	//Inicializamos nuestro semáforo a 1.
 	//El cero indica que el semáforo solo estara
   //disponible para este main() y sus hilos(). 
-	p = sem_init(&sgeneral, 0, 1);
-	if (p !=0)
-	{
+	if (sem_init(&sgeneral, 0, 1)!=0){
       printf("sem_init error...\n");
       printf("errno value= %d definido como %s\n", errno, strerror(errno));
       exit(EXIT_FAILURE);
     }
 
 	//Note que podría hacer lo siguiente con un bucle for() en vez de repetir codigo. Modifiquelo.
-	if(pthread_create(&tid1, NULL, ThreadAdd, NULL)) 
-	{
+	if(pthread_create(&tid1, NULL, ThreadAdd, NULL)){
       printf("\n ERROR creating thread 1");
       exit(EXIT_FAILURE); 
 	}
-	if(pthread_create(&tid2, NULL, ThreadAdd, NULL)) 
-	{
+	if(pthread_create(&tid2, NULL, ThreadAdd, NULL)){
 	    printf("\n ERROR creating thread 2");
 	    exit(EXIT_FAILURE); 
 	}
 
 	//Note que podría hacer esto con un bucle for(). Modifiquelo.
-	if(pthread_join(tid1, NULL)) /* wait for the thread 1 to finish */ 
-	{
+	if(pthread_join(tid1, NULL)){
       printf("\n ERROR joining thread");
       exit(EXIT_FAILURE); 
 	}
-	if(pthread_join(tid2, NULL)) /* wait for the thread 2 to finish */ 
-	{
+	if(pthread_join(tid2, NULL)){
       printf("\n ERROR joining thread");
       exit(EXIT_FAILURE); 
 	}

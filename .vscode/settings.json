@@ -4,6 +4,7 @@
         "unistd.h": "c",
         "stdio.h": "c",
         "pthread.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "semaphore.h": "c"
     }
 }
