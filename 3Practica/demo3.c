@@ -28,7 +28,6 @@ en C.
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h> //Para la funcion strerror(), que permite describir el valor de errno como cadena.
-
 #define NITER 100 
 
 int count = 0; //Recurso compartido

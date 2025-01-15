@@ -34,32 +34,21 @@ int avail = 0; //Critical section
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;  //MUTEX YA INICIALIZADO A 1
 
 
-void * threadFunc(void *arg) 
-{
+void * threadFunc(void *arg){
     int cnt = atoi((char *) arg); 
-	int s, j;
-
-    /*******  ¿Que ocurriria si ponemos pthread_mutex_lock() antes del for
-    y pthread_mutex_unlock() despues del for?  **********/
+	
     
-    for (j=0; j<cnt; j++)
-    {
-        //Lock the mutex
-        s = pthread_mutex_lock(&mtx); 
-        if (s != 0) /*Minimo control de errores*/
-        {
+    for (int j=0; j<cnt; j++){ 
+        if (pthread_mutex_lock(&mtx)!= 0){
             printf("mutex_lock error...\n");
             pthread_exit(NULL); 
         }    
 
-        /* Let consumer know another unit is available */ 
         avail++; /*Critical section*/
-        printf("Variable avail incrementada por la hebra %lu, avail=%d\n", (unsigned long) pthread_self(),avail); 
+        printf("Variable avail incrementada por la hebra %ld, avail=%d\n", (long int) pthread_self(),avail); 
         
-        //Unlock mutex
-        s = pthread_mutex_unlock(&mtx);
-        if (s != 0)  /*Minimo control de errores*/
-        {
+
+        if (pthread_mutex_unlock(&mtx)!= 0){
 				printf("mutex_unlock error...\n");
 				pthread_exit(NULL); 
 		}	
@@ -67,62 +56,53 @@ void * threadFunc(void *arg)
     pthread_exit(NULL); 
 }
 
-int main(int argc, char *argv[]) 
-{
-    if(argc<3) 
-	 {
+int main(int argc, char *argv[]){
+    if(argc<3){
         printf("Ussage: ./a.out Number_of_increasing_for_thread1 Number_of_increasing_for_thread2 Number_of_increasing_for_threadN\n");
         exit(EXIT_FAILURE); 
     }
 
     /* Creación de un Array de hebras. En este caso se usara malloc() para la cantidad de hebras a crear, pero podria usar "pthread_t thr[totThreads]"*/ 
     pthread_t *thr;
-    int s, j;
     int totThreads;
     int totRequired; /* Total number of units that all threads will produce */
     int numConsumed; /* Total units so far consumed */
     booleano done;
     
-    // El numero de hebras a crear sera el numero de argumentos menos uno
+
     totThreads = argc-1;
     
-    thr= (pthread_t *) malloc ((totThreads)*sizeof(pthread_t));
+    thr= (pthread_t *) malloc((totThreads)*sizeof(pthread_t));
     // Tambien podria hacerse asi: pthread_t thr[totThreads];
     
     /* Create all threads */ 
     totRequired = 0;
-    for (j = 0; j < totThreads; j++) 
-    {
+    for (int j = 0; j < totThreads; j++){
         totRequired += atoi(argv[j+1]); //Sum is the total of increments 
         
         /* Se pasa a cada hebra el numero de incrementos asignados a la misma sobre la variable compartida avail
         OJO!!!!, se esta pasando la dirección de una cadena (aunque sea un numero). Habra que reconvertir en la 
-        hebra con la funcion atoi() */
-        s=pthread_create(&thr[j], NULL, threadFunc, argv[j+1]);  
-        if (s != 0) /*Minimo control de errores*/
-        {
+        hebra con la funcion atoi() */  
+        if (pthread_create(&thr[j], NULL, threadFunc, argv[j+1])!= 0){ 
            printf("pthread_create error...\n");
            exit(EXIT_FAILURE);
-        } 
+        }
+        //printf("\n%dº Hilo creado\n",j+1);
     }
     
     printf("Main o hebra principal. Total de veces a decrementar la variable avail = %d\n", totRequired);
     /* Use a polling loop to check for available units */ 
     numConsumed = 0;
     done = FALSE;
-    for (;;) //Continuous simulation 
-    {
+    for (;;){ //Continuous simulation 
         //Lock mutex
-        s = pthread_mutex_lock(&mtx);
-        if (s != 0) /*Minimo control de errores*/
-        {
+        if (pthread_mutex_lock(&mtx)!= 0){ 
             printf("mutex_lock error...\n");
             exit(EXIT_FAILURE);
         }
         
         /*Critical section*/
-        while (avail > 0) /* Consume all available units */ 
-        {
+        while (avail > 0){ /* Consume all available units */ 
             /* Do something with produced unit */
             numConsumed ++;
             avail--;
@@ -136,15 +116,13 @@ int main(int argc, char *argv[])
           
         /* Una vez el main() ha consumido todo lo disponible en avail desbloquea el mutex
            para que otra hebra pueda realizar nuevos incrementos que poder consumir */
-        s = pthread_mutex_unlock(&mtx); /*Desbloqueo de la barrera*/ 
-        if (s != 0) /*Minimo control de errores*/
-        {
+         /*Desbloqueo de la barrera*/ 
+        if (pthread_mutex_unlock(&mtx)!= 0){ /*Minimo control de errores*/
             printf("mutex_unlock error...\n"); 
             exit(EXIT_FAILURE);
         }    
     
-        if (done)
-        {
+        if (done){
             printf("Main o hebra principal. Saliendo...Los %d incrementos producidos ya se han decrementado.\n", totRequired); 
             break;
         }
@@ -153,10 +131,8 @@ int main(int argc, char *argv[])
     }
     
     
-    for (j = 0; j < (argc-1); j++) 
-    {
-         s = pthread_join(thr[j], NULL);
-         if (s != 0) /*Minimo control de errores*/
+    for (int j = 0; j < (argc-1); j++){
+         if (pthread_join(thr[j], NULL)!= 0) /*Minimo control de errores*/
          {
             printf("pthread_join error...\n");
             exit(EXIT_FAILURE);
