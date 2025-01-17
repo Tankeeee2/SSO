@@ -6,8 +6,7 @@
 #include <sys/wait.h>
 
 
-int main(void) 
-{
+int main(void){
     pid_t hijo_pid, childpid; 
     int status;
     

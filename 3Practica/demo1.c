@@ -6,10 +6,18 @@
 
 int glob = 0; //GLOBAL VARIABLE
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER; //MUTEX YA INICIALIZADO A 1
+pthread_t t1, t2; 
+
 
 void * threadFunc(void *arg){
     int loops = *((int *) arg); 
+    int hilo;
+    if(pthread_self()==t1)
+        hilo=1;
+    else
+        hilo=2;
 
+    
     for (int j = 0; j < loops; j++){
 
         if (pthread_mutex_lock(&mtx)!= 0){//Bloqueamos semáforo
@@ -21,7 +29,7 @@ void * threadFunc(void *arg){
         glob++;
         /*Critical Section */
         
-        printf("Thread %lu increasing the global variable...\n", (unsigned long) pthread_self()); 
+        printf("Hilo %d incrementando la variable, con id %ld\n", hilo,(unsigned long) pthread_self()); 
 
 		
         if (pthread_mutex_unlock(&mtx)!= 0){//Desbloqueamos semáforo
@@ -37,7 +45,7 @@ void * threadFunc(void *arg){
 
 int main(int argc, char *argv[]) 
 {
-    pthread_t t1, t2; 
+
     int loops;
     
     if(argc!=2){
