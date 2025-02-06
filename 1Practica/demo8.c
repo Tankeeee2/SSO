@@ -22,8 +22,7 @@ int main(void)
 {
 	/* Se cambia el controlador para ctrl-c, escribiendo error en pantalla
 	 * si lo hay. */
-	if (signal (SIGINT, controlador) == SIG_ERR)
-	{
+	if (signal (SIGINT, controlador) == SIG_ERR){
 		perror("Signal error");
    	    printf("errno value= %d\n", errno);
 		exit(EXIT_FAILURE);
